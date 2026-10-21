@@ -332,14 +332,14 @@ body .motivation-toast,body .note,body .status,body pre{font-weight:400!importan
 /* StudyOrbital brand assets */
 .studyorbit-logo{display:block;width:min(140px,42vw);height:auto;max-height:150px;margin:0 auto 12px;object-fit:contain;position:relative;z-index:1}
 body:before{background-image:linear-gradient(180deg,rgba(4,9,20,.70),rgba(5,12,25,.82)),url("./studyorbit-background.png");background-size:cover;background-position:center;background-repeat:no-repeat}
-</style><link rel="stylesheet" href="./studyorbit-features.css?v=7902"><link rel="stylesheet" href="./studyorbit-todo.css?v=7802"><link rel="stylesheet" href="./studyorbit-shell.css?v=8200"><link rel="stylesheet" href="./studyorbit-library.css?v=8001"><link rel="stylesheet" href="./studyorbit-auth.css?v=8200"><script src="./studyorbit-config.js?v=8200"></script><script>if(window.STUDYORBIT_CONFIG&&window.STUDYORBIT_CONFIG.supabaseUrl&&window.STUDYORBIT_CONFIG.supabasePublishableKey)document.documentElement.classList.add("so-cloud-configured");</script></head><body>
+</style><link rel="stylesheet" href="./studyorbit-features.css?v=7902"><link rel="stylesheet" href="./studyorbit-todo.css?v=7802"><link rel="stylesheet" href="./studyorbit-shell.css?v=8210"><link rel="stylesheet" href="./studyorbit-library.css?v=8001"><link rel="stylesheet" href="./studyorbit-auth.css?v=8210"><script src="./studyorbit-config.js?v=8210"></script><script>if(window.STUDYORBIT_CONFIG&&window.STUDYORBIT_CONFIG.supabaseUrl&&window.STUDYORBIT_CONFIG.supabasePublishableKey)document.documentElement.classList.add("so-cloud-configured");</script></head><body>
 <div id="soLaunchMotion" class="so-launch-motion" aria-hidden="true"><div class="so-launch-mark"><img src="./icon-192.png" alt=""><strong>StudyOrbital</strong><span>Study with direction.</span><i></i></div></div>
 <div id="symbolRain" class="symbol-rain" aria-hidden="true"></div>
 <main class="wrap">
 <header class="hero">
 <img src="./studyorbit-logo.png" alt="StudyOrbital logo" class="studyorbit-logo" width="140" onerror="this.hidden=true">
 <h1>StudyOrbital</h1>
-<span class="orbit-model-label" aria-label="Model S8.2">S8.2</span>
+<span class="orbit-model-label" aria-label="Model S8.2.1">S8.2.1</span>
 </header>
 <section class="card" id="summary"><h2>📋🏷Summary dashboard</h2><div class="stats"><div class="stat"><span>Total Chapters</span><strong id="totalChapters">51</strong></div><div class="stat"><span>Completed Chapters</span><strong id="completedCount">0</strong></div><div class="stat"><span>Overall Progress</span><strong id="percent">0%</strong></div></div><div class="bar"><div id="progressBar"></div></div><div class="small" id="distribution"></div><div class="stats" style="margin-top:14px"><div class="stat"><span>Avg. Study hr/Day</span><strong id="medianStudyHours">—</strong></div><div class="stat"><span>Consistency Meter</span><strong id="consistencyPercent">—</strong></div></div><div class="bar" aria-label="Consistency meter"><div id="consistencyBar" style="width:0%"></div></div><div class="small" id="studyMetricsHint">Log daily study time to start measuring consistency.</div></section>
 <section class="card accordion-section collapsed" id="chapterPlanSection"><h2 tabindex="0" role="button" aria-expanded="false">📑 Chapter plan</h2><div class="field"><label for="planSubject">Planning Subject</label><select id="planSubject"></select></div><p class="section-label"></p><div id="drawers"></div></section>
@@ -647,7 +647,7 @@ el('copyAll').addEventListener('click',async()=>{const t=JSON.stringify(snapshot
  src.chapterStatus=convertedCh;src.stageStatus=convertedSt;
  }
  state=merge(defaults(),src);state.qbSubject=(x.questionBankSelection&&x.questionBankSelection.subject)||src.qbSubject||'Maths';state.qbChapter=(x.questionBankSelection&&x.questionBankSelection.chapter)||src.qbChapter||'FOA';state.qbCategory=(x.questionBankSelection&&x.questionBankSelection.category)||src.qbCategory||'Exercise 1';el('planSubject').value=state.planSubject;state.drawers=activeDrawers();initSelects();el('qbSubject').value=state.qbSubject;renderChapterSelect('qb');el('qbChapter').value=CHAPTERS[state.qbSubject].includes(state.qbChapter)?state.qbChapter:CHAPTERS[state.qbSubject][0];renderActivityStages('qb');loadDaily();renderDrawers();renderSummary();loadQB();persist();setStatus('restoreStatus','Snapshot restored. Theme and layout remain unchanged.')}catch(e){setStatus('restoreStatus','Restore failed: '+e.message)}});el('resetTracker').addEventListener('click',()=>{if(!confirm('Reset all progress and records in this browser? Export a backup first if needed.'))return;state=defaults();el('planSubject').value=state.planSubject;state.drawers=activeDrawers();initSelects();loadDaily();renderDrawers();renderSummary();loadQB();persist();setStatus('restoreStatus','Tracker reset. All progress records are now empty.');});
-initSelects();el('planSubject').value=state.planSubject;state.drawers=activeDrawers();loadDaily();renderDrawers();renderSummary();loadQB();premiumTintWords(document.querySelector('main'));
+window.STUDYORBIT_CHAPTERS=CHAPTERS;window.STUDYORBIT_STAGES_FOR=stagesFor;initSelects();el('planSubject').value=state.planSubject;state.drawers=activeDrawers();loadDaily();renderDrawers();renderSummary();loadQB();premiumTintWords(document.querySelector('main'));
 
 // Top-level compact drawers: opening one folds the other two. Dashboard remains permanently open.
 (function setupSectionAccordions(){
@@ -699,7 +699,7 @@ if("serviceWorker" in navigator){
   }).catch(error=>console.error("StudyOrbital service worker registration failed:",error));
  });
 }
-</script><script src="./studyorbit-features.js?v=8200"></script><script src="./studyorbit-todo.js?v=8100"></script><script>
+</script><script src="./studyorbit-features.js?v=8210"></script><script src="./studyorbit-todo.js?v=8100"></script><script>
 (()=>{
 const count=document.getElementById('completedCount');if(!count)return;
 const card=count.closest('.stat');
@@ -712,5 +712,5 @@ function showCompleted(){const old=document.getElementById('orbCompletedModal');
  card?.addEventListener('click',showCompleted);card?.setAttribute('role','button');card?.setAttribute('tabindex','0');card?.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();showCompleted()}});
 })();
 </script>
-<script src="./studyorbit-library.js?v=8001"></script><script src="./studyorbit-shell.js?v=8200"></script><script src="./studyorbit-auth.js?v=8200"></script>
+<script src="./studyorbit-library.js?v=8001"></script><script src="./studyorbit-shell.js?v=8210"></script><script src="./studyorbit-auth.js?v=8210"></script>
 </body></html>
