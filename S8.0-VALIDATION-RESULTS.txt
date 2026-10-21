@@ -1,0 +1,23 @@
+StudyOrbital S8.0 — New Repository Pack
+Validation date: 2026-10-22
+
+STATIC CHECKS: PASS
+- 11 root JavaScript files passed `node --check` (Service Worker included).
+- 4 inline JavaScript blocks in index.html passed Node syntax checks.
+- HTML parsing passed; 65 static IDs, no duplicate IDs.
+- All 16 local HTML asset references and local CSS/image URLs exist.
+- manifest.json is valid JSON; all manifest icons exist.
+- PWA install name, browser title, opening animation and visible app/auth branding use the exact name “StudyOrbital”.
+- All 14 Service Worker CORE references exist.
+- All 5 CSS files parsed with tinycss2; no top-level parse errors.
+- S8.0 localStorage, IndexedDB, auth metadata and Service Worker cache namespaces are isolated from the old Mission-IIT app.
+- SQL static guard check confirms tracker RLS/auth.uid() references and explicitly private Storage bucket.
+- ZIP integrity check performed after packaging.
+- GitHub Actions workflow includes JavaScript syntax checks, static release checks and publishes runtime assets only.
+
+NOT COMPLETED / OPEN BEFORE LAUNCH
+- Full real-browser visual and interaction test was not completed; Chromium launch/navigation is restricted in this environment.
+- Live deployment under the new repository was not performed.
+- Supabase has not been configured because it must be an owner-controlled project; login, email verification, recovery, cloud sync and private file security have not had an end-to-end test.
+
+Release status: NEW-REPOSITORY TEST CANDIDATE, not launch-certified.
