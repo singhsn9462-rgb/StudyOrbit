@@ -1,0 +1,24 @@
+StudyOrbital S8.2 — static validation results
+Date: 2026-10-22
+
+PASS
+- Python release validator: HTML ID uniqueness, local asset references, manifest icons,
+  Service Worker core asset list, storage namespace retention and account safeguards.
+- Node syntax check for all root JavaScript modules.
+- Node syntax checks for all inline JavaScript blocks in index.html.
+- CSS parsing for each root stylesheet (no top-level CSS parser errors).
+- ZIP integrity test and relative local asset existence check.
+- Navigation destinations use a common list and top-level sections are sorted to that order.
+- Removed the legacy “Main managing part END” note; Home's repeated daily-log quick action is no longer displayed.
+- Supabase sign-up/sign-in/recovery/profile-update code and RLS data schema are present.
+- Fixed a first-login edge case where an empty cloud record could cause repeat page reloads.
+- StudyOrbital localStorage key and Personal Storage IndexedDB key are retained.
+- Service Worker cache version is bumped and its cleanup prefix remains separate from Mission-IIT S7.x caches.
+
+NOT VERIFIED / REQUIRES OWNER ACTION
+- The static frontend has not completed a reliable live browser click-through in this environment.
+- The owner-controlled Supabase URL/key are empty in this ZIP; real signup, verification email,
+  password recovery, account separation, remote sync and private file access could not be tested.
+- The live GitHub Pages deployment was not opened by this validation run.
+
+Release status: STATICALLY VALIDATED CANDIDATE — NOT LAUNCH-CERTIFIED.

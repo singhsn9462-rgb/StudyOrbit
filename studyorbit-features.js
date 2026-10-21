@@ -63,11 +63,10 @@ const main=document.querySelector('main');
 const chapterSection=$('chapterPlanSection'),qbSectionForOrder=$('questionBankSection'),dailySectionForOrder=$('dailyLogSection');
 // Only the Daily Log heading's emoji was explicitly requested to change.
 if(dailySectionForOrder){const h=dailySectionForOrder.querySelector(':scope > h2');if(h)h.textContent='🔖Daily Log';}
-const managingNote=document.createElement('div');managingNote.id='orbitManagingPartEnd';managingNote.className='orbit-managing-note';
-managingNote.innerHTML='<div class="orbit-managing-note-label">NOTE❗</div><span>Main managing part <span class="orbit-managing-note-red">END</span> here. Scroll down to <span class="orbit-managing-note-red">Save Your Data</span> and <span class="orbit-managing-note-red">Recover Your Data</span>.</span>';
-const ordered=[ $('summary'), qbSectionForOrder, dailySectionForOrder, chapterSection, testSection, analysisSection, leaveSection ];
+// S8.2 removes the legacy end-of-management warning. Navigation now leads to Data & Backup directly.
+const ordered=[ $('summary'), chapterSection, qbSectionForOrder, dailySectionForOrder, testSection, analysisSection, leaveSection ];
 ordered.filter(Boolean).forEach(node=>main.appendChild(node));
-main.appendChild(managingNote);if(snapshotSection)main.appendChild(snapshotSection);
+if(snapshotSection)main.appendChild(snapshotSection);
 // Hide previous background attribution because the image is now user-provided artwork, not the old campus photograph.
 const credit=document.querySelector('.photo-credit');if(credit)credit.hidden=true;
 const statusStats=(entries,totals,s,c)=>{const relevant=entries.filter(e=>e.subject===s&&e.chapter===c),keys=Object.keys(totals).filter(k=>{try{const [a,b]=JSON.parse(k);return a===s&&b===c}catch(_){return false}});let available=0;keys.forEach(k=>available+=num(totals[k]));const attempted=relevant.reduce((n,e)=>n+num(e.solved),0),repeat=relevant.reduce((n,e)=>n+num(e.repeat),0),correct=relevant.reduce((n,e)=>n+num(e.correct),0),minutes=relevant.reduce((n,e)=>n+num(e.time),0);const unique=Math.min(available,Math.max(0,attempted-repeat));return {available,attempted,repeat,correct,minutes,unique,accuracy:attempted?correct/attempted*100:NaN,unattempted:available?(available-unique)/available*100:NaN,avg:attempted?minutes/attempted:NaN}};

@@ -2,7 +2,7 @@
    Requires the SQL policies in supabase-schema.sql and public project config in studyorbit-config.js.
    Client-side code must never use a service-role key. */
 (()=>{'use strict';
-const cfg=window.STUDYORBIT_CONFIG||{};const configured=Boolean(String(cfg.supabaseUrl||'').trim()&&String(cfg.supabasePublishableKey||'').trim());const STORE='studyorbitS80_private_workspace_v1';const LAST_USER='studyorbit_s80_cloud_user_id';const ARCHIVE_PREFIX='studyorbit_s80_local_archive_';let client=null,user=null,syncReady=false,activeActivation=null,saveTimer=null,hydrating=false,offlineMode=false,gate=null,messageNode=null,mode='signin',pendingConflict=null,accountButton=null,accountMenu=null,sessionStatus=null;
+const cfg=window.STUDYORBIT_CONFIG||{};const configured=Boolean(String(cfg.supabaseUrl||'').trim()&&String(cfg.supabasePublishableKey||'').trim());const STORE='studyorbitS80_private_workspace_v1';const LAST_USER='studyorbit_s80_cloud_user_id';const ARCHIVE_PREFIX='studyorbit_s80_local_archive_';let client=null,user=null,syncReady=false,activeActivation=null,saveTimer=null,hydrating=false,offlineMode=false,gate=null,messageNode=null,mode='signin',pendingConflict=null,accountButton=null,accountMenu=null,sessionStatus=null,setupMenu=null;
 const $=id=>document.getElementById(id);const stable=v=>{if(Array.isArray(v))return v.map(stable);if(v&&typeof v==='object')return Object.fromEntries(Object.keys(v).sort().map(k=>[k,stable(v[k])]));return v};const same=(a,b)=>JSON.stringify(stable(a))===JSON.stringify(stable(b));
 function parseLocal(){try{const raw=localStorage.getItem(STORE);return raw?JSON.parse(raw):null}catch(_){return null}}
 function meaningful(x){if(!x||typeof x!=='object')return false;const hasKeys=v=>v&&typeof v==='object'&&Object.keys(v).length>0;return hasKeys(x.chapterStatus)||hasKeys(x.stageStatus)||hasKeys(x.questionBank)||hasKeys(x.studyHistory)||hasKeys(x.orbit?.daily)||Array.isArray(x.orbit?.tests)&&x.orbit.tests.length>0||Array.isArray(x.orbit?.leaves)&&x.orbit.leaves.length>0||Array.isArray(x.orbit?.qb?.entries)&&x.orbit.qb.entries.length>0||Array.isArray(x.orbit?.rev?.entries)&&x.orbit.rev.entries.length>0||Array.isArray(x.todo?.tasks)&&x.todo.tasks.length>0||Array.isArray(x.todo?.events)&&x.todo.events.length>0}
@@ -21,17 +21,87 @@ async function cloudRead(uid){const {data,error}=await client.from('studyorbit_u
 async function cloudWrite(uid,data){const {error}=await client.from('studyorbit_user_data').upsert({user_id:uid,data,updated_at:new Date().toISOString()},{onConflict:'user_id'});if(error)throw error}
 function showStatus(text,kind='info'){if(!sessionStatus){sessionStatus=document.createElement('div');sessionStatus.className='so-auth-status';sessionStatus.setAttribute('role','status');document.body.appendChild(sessionStatus)}sessionStatus.innerHTML=`<span class="so-storage-dot"></span><span><strong>${kind==='error'?'Sync issue':kind==='offline'?'Offline':'Account'}:</strong> ${escapeHTML(text)}</span>`}
 function escapeHTML(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-function setAccountControls(){const header=document.querySelector('main .hero');if(!header)return;if(!accountButton){const wrap=document.createElement('div');wrap.className='so-auth-header-control';wrap.id='soAuthHeaderControl';wrap.innerHTML='<button type="button" class="so-auth-account" id="soAuthAccountBtn" aria-expanded="false" aria-label="Account menu"><span id="soAuthAccountLabel">Account</span>⌄</button><div class="so-auth-menu" id="soAuthAccountMenu" hidden><small id="soAuthAccountEmail"></small><button type="button" id="soAuthSignOut">Sign out</button></div>';header.appendChild(wrap);accountButton=$('soAuthAccountBtn');accountMenu=$('soAuthAccountMenu');accountButton.addEventListener('click',()=>{accountMenu.hidden=!accountMenu.hidden;accountButton.setAttribute('aria-expanded',String(!accountMenu.hidden))});document.addEventListener('click',e=>{if(!wrap.contains(e.target)&&accountMenu){accountMenu.hidden=true;accountButton?.setAttribute('aria-expanded','false')}});$('soAuthSignOut').addEventListener('click',signOut)}$('soAuthAccountLabel').textContent=user?.user_metadata?.display_name||user?.email?.split('@')[0]||'Account';$('soAuthAccountEmail').textContent=user?.email||''}
+function setAccountControls(){
+ const header=document.querySelector('main .hero');if(!header)return;
+ const storageStatus=document.querySelector('.so-sidebar-footer');
+ if(storageStatus){const displayName=escapeHTML(user?.user_metadata?.display_name||user?.email?.split('@')[0]||'Your profile');storageStatus.innerHTML='<span class="so-storage-dot"></span><strong>Cloud profile</strong><br>Signed in as '+displayName+'. Changes sync to this account.';}
+ if(!accountButton){
+  const wrap=document.createElement('div');wrap.className='so-auth-header-control';wrap.id='soAuthHeaderControl';
+  wrap.innerHTML='<button type="button" class="so-auth-account" id="soAuthAccountBtn" aria-expanded="false" aria-label="Account menu"><span id="soAuthAccountLabel">Account</span><span aria-hidden="true">⌄</span></button><div class="so-auth-menu" id="soAuthAccountMenu" hidden><small id="soAuthAccountEmail"></small><button type="button" id="soAuthEditProfile">Edit profile</button><div class="so-auth-profile-editor" id="soAuthProfileEditor" hidden><label for="soAuthProfileName">Display name</label><input id="soAuthProfileName" maxlength="60" autocomplete="name"><button type="button" id="soAuthSaveProfile">Save profile</button><p id="soAuthProfileStatus" role="status"></p></div><button type="button" id="soAuthSignOut">Sign out</button></div>';
+  header.appendChild(wrap);accountButton=$('soAuthAccountBtn');accountMenu=$('soAuthAccountMenu');
+  accountButton.addEventListener('click',()=>{accountMenu.hidden=!accountMenu.hidden;accountButton.setAttribute('aria-expanded',String(!accountMenu.hidden));if(!accountMenu.hidden)$('soAuthProfileName').value=user?.user_metadata?.display_name||user?.email?.split('@')[0]||''});
+  document.addEventListener('click',e=>{if(!wrap.contains(e.target)&&accountMenu){accountMenu.hidden=true;accountButton?.setAttribute('aria-expanded','false')}});
+  $('soAuthEditProfile').addEventListener('click',()=>{$('soAuthProfileEditor').hidden=!$('soAuthProfileEditor').hidden;$('soAuthProfileStatus').textContent='';if(!$('soAuthProfileEditor').hidden)$('soAuthProfileName').focus()});
+  $('soAuthSaveProfile').addEventListener('click',saveProfile);
+  $('soAuthSignOut').addEventListener('click',signOut);
+ }
+ $('soAuthAccountLabel').textContent=user?.user_metadata?.display_name||user?.email?.split('@')[0]||'Account';
+ $('soAuthAccountEmail').textContent=user?.email||'';
+}
+async function saveProfile(){
+ const name=$('soAuthProfileName').value.trim(),status=$('soAuthProfileStatus'),button=$('soAuthSaveProfile');
+ if(!name){status.textContent='Enter a display name.';return}
+ if(!client||!user||!syncReady){status.textContent='Account connection is not ready.';return}
+ button.disabled=true;status.textContent='Saving profile…';
+ try{const {data,error}=await client.auth.updateUser({data:{display_name:name}});if(error)throw error;user=data.user||user;setAccountControls();status.textContent='Profile name updated.';showStatus('Profile updated. Your study records remain linked to this account.');}
+ catch(err){status.textContent=humanError(err)}finally{button.disabled=false}
+}
 function conflictView(local,cloudRow){pendingConflict={local,cloud:cloudRow.data};$('soAuthKicker').textContent='DATA PROTECTION';$('soAuthTitle').textContent='Choose which records to use';$('soAuthCopy').textContent='This device and your account both contain study data. Nothing has been overwritten. Choose one version; the other will be kept as a local backup.';$('soAuthForm').hidden=true;$('soAuthLinks').hidden=true;const box=document.createElement('div');box.id='soConflictChoices';box.className='so-auth-conflict';box.innerHTML='<button type="button" class="so-auth-choice" data-conflict-choice="local"><strong>Keep this device’s records</strong><span>Upload this browser’s current tracker data to your account. A local archive is kept first.</span></button><button type="button" class="so-auth-choice" data-conflict-choice="cloud"><strong>Use cloud account records</strong><span>Load the data already stored in your account. This device’s current data is archived first.</span></button>';gate.querySelector('.so-auth-card').appendChild(box);say('Choose carefully. No records have been deleted.','info')}
 async function resolveConflict(choice){if(!pendingConflict||!user)return;const local=pendingConflict.local,cloud=pendingConflict.cloud;const buttons=gate.querySelectorAll('[data-conflict-choice]');buttons.forEach(b=>b.disabled=true);try{if(choice==='local'){const raw=local?JSON.stringify(local):'{}';archiveLocal(user.id);if(local)downloadBackup(raw,'StudyOrbital-local-before-cloud-sync.json');await cloudWrite(user.id,local||{});localStorage.setItem(LAST_USER,user.id);pendingConflict=null;syncReady=true;setGateVisible(false);setAccountControls();showStatus('This device’s records are now synced to your account.');installSyncHook();notifyAuthReady();}else{archiveLocal(user.id);if(local)downloadBackup(JSON.stringify(local,null,2),'StudyOrbital-local-archive-before-cloud-load.json');hydrating=true;localStorage.setItem(STORE,JSON.stringify(cloud||{}));localStorage.setItem(LAST_USER,user.id);hydrating=false;location.reload()}}catch(err){hydrating=false;buttons.forEach(b=>b.disabled=false);say('Could not complete the data choice: '+humanError(err),'error')}}
-async function activate(authUser){if(!authUser)return;if(activeActivation){if(user?.id===authUser.id)return activeActivation;await activeActivation}user=authUser;activeActivation=(async()=>{makeGate();$('soAuthForm').hidden=false;$('soAuthLinks').hidden=false;const priorUid=localStorage.getItem(LAST_USER);if(priorUid&&priorUid!==user.id){archiveLocal(priorUid);localStorage.removeItem(STORE);localStorage.setItem(LAST_USER,user.id);location.reload();return}
- try{if(!navigator.onLine)throw new Error('offline');const local=parseLocal();const cloud=await cloudRead(user.id);if(cloud){if(meaningful(local)&&!same(local,cloud.data)){conflictView(local,cloud);setGateVisible(true);return}if(!meaningful(local)&&!same(local,cloud.data)){hydrating=true;localStorage.setItem(STORE,JSON.stringify(cloud.data||{}));hydrating=false;localStorage.setItem(LAST_USER,user.id);location.reload();return}if(!same(local,cloud.data)){await cloudWrite(user.id,local)}}else{await cloudWrite(user.id,local||{})}
- localStorage.setItem(LAST_USER,user.id);syncReady=true;offlineMode=false;setGateVisible(false);setAccountControls();showStatus('Signed in · changes sync to your account.');installSyncHook();notifyAuthReady();
- }catch(err){hydrating=false;if(!navigator.onLine&&localStorage.getItem(LAST_USER)===user.id&&parseLocal()){syncReady=true;offlineMode=true;setGateVisible(false);setAccountControls();showStatus('Offline · changes stay on this device and sync when connected.','offline');installSyncHook();notifyAuthReady();return}setGateVisible(true);say('Could not securely load this account’s records. No local data was replaced. '+humanError(err),'error');const retry=document.createElement('button');retry.type='button';retry.className='so-auth-link';retry.textContent='Retry connection';retry.onclick=()=>{retry.remove();activeActivation=null;activate(user)};$('soAuthLinks').hidden=false;$('soAuthLinks').appendChild(retry)}finally{activeActivation=null}})();return activeActivation}
+async function activate(authUser){
+ if(!authUser)return;
+ if(activeActivation){if(user?.id===authUser.id)return activeActivation;await activeActivation}
+ user=authUser;
+ activeActivation=(async()=>{
+  makeGate();$('soAuthForm').hidden=false;$('soAuthLinks').hidden=false;
+  const priorUid=localStorage.getItem(LAST_USER);
+  if(priorUid&&priorUid!==user.id){archiveLocal(priorUid);localStorage.removeItem(STORE);localStorage.setItem(LAST_USER,user.id);location.reload();return}
+  try{
+   if(!navigator.onLine)throw new Error('offline');
+   const local=parseLocal();
+   const cloudRow=await cloudRead(user.id);
+   const localHas=meaningful(local);
+   const cloudData=cloudRow&&cloudRow.data&&typeof cloudRow.data==='object'?cloudRow.data:{};
+   const cloudHas=meaningful(cloudData);
+   if(cloudRow&&localHas&&cloudHas&&!same(local,cloudData)){
+    conflictView(local,cloudRow);setGateVisible(true);return;
+   }
+   if(cloudRow&&cloudHas&&!localHas){
+    archiveLocal(user.id);
+    hydrating=true;localStorage.setItem(STORE,JSON.stringify(cloudData));localStorage.setItem(LAST_USER,user.id);hydrating=false;
+    location.reload();return;
+   }
+   if(!cloudRow||localHas&&!cloudHas||!same(local,cloudData)){
+    await cloudWrite(user.id,local||{});
+   }
+   localStorage.setItem(LAST_USER,user.id);syncReady=true;offlineMode=false;
+   setGateVisible(false);setAccountControls();showStatus('Signed in · changes will sync automatically.');installSyncHook();notifyAuthReady();
+  }catch(err){
+   hydrating=false;
+   if(!navigator.onLine&&localStorage.getItem(LAST_USER)===user.id&&parseLocal()){
+    syncReady=true;offlineMode=true;setGateVisible(false);setAccountControls();showStatus('Offline · changes stay on this device and sync when connected.','offline');installSyncHook();notifyAuthReady();return;
+   }
+   setGateVisible(true);say('Could not securely load this account’s records. No local data was replaced. '+humanError(err),'error');
+   const oldRetry=$('soAuthRetry');if(oldRetry)oldRetry.remove();
+   const retry=document.createElement('button');retry.id='soAuthRetry';retry.type='button';retry.className='so-auth-link';retry.textContent='Retry connection';retry.onclick=()=>{retry.remove();activeActivation=null;activate(user)};
+   $('soAuthLinks').hidden=false;$('soAuthLinks').appendChild(retry);
+  }finally{activeActivation=null}
+ })();
+ return activeActivation;
+}
 function installSyncHook(){if(window.__soSyncHookInstalled)return;window.__soSyncHookInstalled=true;const native=Storage.prototype.setItem;Storage.prototype.setItem=function(key,value){native.call(this,key,value);if(this===localStorage&&key===STORE&&user&&syncReady&&!hydrating){if(saveTimer)clearTimeout(saveTimer);saveTimer=setTimeout(()=>syncLocalState(),1300)}};window.addEventListener('online',()=>{if(user&&syncReady){offlineMode=false;syncLocalState()}});window.addEventListener('offline',()=>{if(user&&syncReady){offlineMode=true;showStatus('Offline · local changes are kept and will sync when online.','offline')}})}
 async function syncLocalState(){if(!user||!syncReady)return false;const data=parseLocal();if(!data)return true;try{await cloudWrite(user.id,data);offlineMode=false;showStatus('All changes synced.');return true}catch(err){offlineMode=true;showStatus(navigator.onLine?'Local save is safe; cloud sync failed. Your local copy is retained. '+humanError(err):'Offline · local save is safe; cloud sync will retry when connected.','offline');return false}}
 async function signOut(){if(!client||!user)return;const uid=user.id;if(saveTimer){clearTimeout(saveTimer);saveTimer=null}try{const synced=await syncLocalState();await client.auth.signOut();if(synced){archiveLocal(uid);localStorage.removeItem(STORE)}else{showStatus('Signed out with your unsynced local tracker copy retained. Sign in to the same account to reconcile it.','offline')}syncReady=false;user=null;window.dispatchEvent(new CustomEvent('studyorbit:auth-signed-out',{detail:{userId:uid}}));localStorage.setItem('studyorbit_s80_last_signed_out_at',String(Date.now()));location.reload()}catch(err){showStatus('Sign out failed: '+humanError(err),'error')}}
-function localModeStatus(){const footer=document.querySelector('.so-sidebar-footer');if(footer)footer.innerHTML='<span class="so-storage-dot"></span><strong>Local-only mode</strong><br>Account sync is not configured yet. Study records stay in this browser; export a JSON backup before changing devices.';const note=$('soLocalNotice');if(note)note.textContent='Local-only mode: records are saved in this browser. Secure login/cloud sync activates after backend setup.'}
+function localModeStatus(){
+ const footer=document.querySelector('.so-sidebar-footer');
+ if(footer)footer.innerHTML='<span class="so-storage-dot" style="background:var(--so-warn)"></span><strong>Device save active</strong><br>Cloud profiles need one-time backend setup.';
+ const header=document.querySelector('main .hero');if(!header||$('soAuthHeaderControl'))return;
+ const wrap=document.createElement('div');wrap.className='so-auth-header-control';wrap.id='soAuthHeaderControl';
+ wrap.innerHTML='<button type="button" class="so-auth-account so-auth-setup-button" id="soAuthSetupButton" aria-expanded="false"><span>Setup</span></button><div class="so-auth-menu so-auth-setup-menu" id="soAuthSetupMenu" hidden><strong>Activate profiles and cloud sync</strong><p>1. Create a Supabase project.<br>2. Run <code>supabase-schema.sql</code> in SQL Editor.<br>3. Add the project URL and Publishable key in <code>studyorbit-config.js</code>.<br>4. Add this GitHub Pages URL to Supabase Auth redirect URLs, then commit and deploy.</p><small>Use only the public Publishable key here. Never use a service-role or secret key.</small></div>';
+ header.appendChild(wrap);setupMenu=$('soAuthSetupMenu');
+ $('soAuthSetupButton').addEventListener('click',()=>{setupMenu.hidden=!setupMenu.hidden;$('soAuthSetupButton').setAttribute('aria-expanded',String(!setupMenu.hidden))});
+ document.addEventListener('click',e=>{if(!wrap.contains(e.target)){setupMenu.hidden=true;$('soAuthSetupButton').setAttribute('aria-expanded','false')}});
+}
 async function init(){if(!configured){localModeStatus();return}document.documentElement.classList.add('so-cloud-configured');makeGate();setGateVisible(true);say('Connecting securely…','info');loading(true,'Connecting…');try{await loadSDK();client=window.supabase.createClient(cfg.supabaseUrl,cfg.supabasePublishableKey,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});const recoveryLink=location.hash.includes('type=recovery');const {data,error}=await client.auth.getSession();if(error)throw error;if(recoveryLink){loading(false);setMode('update-password');say('Enter a new password to finish account recovery.','success')}else if(data.session?.user)await activate(data.session.user);else{loading(false);setMode('signin');say('Sign in or create an account to open your workspace.','info')}client.auth.onAuthStateChange((event,session)=>{if(event==='PASSWORD_RECOVERY'){makeGate();setGateVisible(true);setMode('update-password');say('You can now set a new password for this account.','success')}else if(session?.user&&event==='SIGNED_IN'){if(!user||user.id!==session.user.id){activate(session.user)}}else if(event==='SIGNED_OUT'){syncReady=false;user=null;document.documentElement.classList.add('so-cloud-configured');makeGate();setGateVisible(true);setMode('signin')}})}catch(err){loading(false);say('Account service is not ready. Check the project URL, publishable key and connection. '+humanError(err),'error')}}
 window.StudyOrbitAuth=Object.freeze({isConfigured:()=>configured,getClient:()=>client,getUser:()=>user,isReady:()=>syncReady});
 if(configured){init()}else{localModeStatus()}

@@ -1,0 +1,22 @@
+StudyOrbital S8.1 — Structure Refresh Candidate
+Validation date: 2026-10-22
+
+STATIC CHECKS: PASS
+- All 11 root JavaScript files passed `node --check` (including the Service Worker).
+- 4 inline JavaScript blocks in index.html passed Node syntax checks.
+- HTML static parse passed: 64 unique IDs, no duplicate IDs.
+- 16 local HTML asset references resolve.
+- manifest.json parsed correctly and all manifest icons exist.
+- All 14 Service Worker CORE asset references exist.
+- All 5 CSS files parsed with tinycss2; no top-level parse errors.
+- `scripts/validate_release.py` passed.
+- Account schema statically contains tracker-table RLS/auth.uid() policies and an explicitly private Storage bucket.
+- StudyOrbital localStorage and IndexedDB keys were deliberately retained from S8.0 so existing StudyOrbital records are not discarded; names remain isolated from Mission-IIT.
+- The Pages workflow uses `.github/workflows/static.yml`, matching the workflow name already created in the target repository.
+
+NOT COMPLETED / OPEN BEFORE LAUNCH
+- A full real-browser visual and click-through test could not be completed in this environment; headless Chromium timed out during page capture.
+- The deployed GitHub Pages site was not independently opened or tested from this environment.
+- The owner-controlled Supabase project is not configured in this ZIP. Account creation, email verification, recovery, cross-device cloud sync, and two-user data isolation still require live end-to-end tests after configuration.
+
+Release status: STATICALLY VALIDATED CANDIDATE; NOT LAUNCH-CERTIFIED.

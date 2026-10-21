@@ -1,31 +1,20 @@
-# StudyOrbital — S8.0 Professional Workspace
+# StudyOrbital S8.2 — structure and profile system
 
-A mobile-first JEE preparation workspace with the existing Chapter Plan, Integrated Question Bank, Daily Log, Tests, Analysis, Leave records, To-do list and JSON backup, wrapped in a restrained navy/teal interface. It adds section search, a data-driven overview, Personal Storage, and an optional private Supabase account/sync layer.
+StudyOrbital is a mobile-first JEE preparation workspace with Chapter Plan, Question Bank, Daily Log, My Tests, Analysis, Leave Records, To-do list, Data & Backup, and Personal Storage.
 
-## New repository — important isolation
+## S8.2 changes
+- Navigation and actual section order are now consistent.
+- Mobile destinations are grouped once in More; the legacy end-of-management note and repeated Home quick action are removed.
+- To-do remains the same size and sits to the right of the Home greeting.
+- Creator credits sit in one rectangular bottom panel with clear labels and restrained symbols.
+- Account UI supports signup, sign-in, password recovery, editable profile name, per-user tracker sync, conflict protection and a private file bucket once configured.
+- Existing tracker math, data schema and StudyOrbital storage keys are preserved.
 
-This package is intended for a **separate GitHub repository**. The existing `Mission-IIT` project has not been edited. Browser storage and Service Worker cache names in this package are namespaced for S8.0, so the new app does not reuse the old app’s tracker key, IndexedDB database, or cache names. If you wish to move old tracker records, export a JSON backup in the old app and restore it manually inside S8.0. Personal Storage files are separate from tracker JSON and must be downloaded/copied separately.
+## Deploy
+Use the complete `StudyOrbital-S8.2-Structure-and-Profiles.zip` archive as the source package. For a targeted patch, follow `S8.2-CHANGED-FILES.txt`. Keep all app files at the repository root; retain `.github/workflows/static.yml` and set Pages source to GitHub Actions.
 
-## Quick launch
+## Accounts
+GitHub Pages itself does not provide authentication or a database. To activate real profiles and cross-device cloud saving, follow `AUTH-CLOUD-SETUP-S8.2.md` and run `supabase-schema.sql` in your own Supabase project. Do not paste service-role or secret keys into public files. Until live tests pass, cloud login/sync is not launch-certified; use JSON exports for backups.
 
-1. Extract the ZIP and upload **all extracted files and folders** into the root of a brand-new repository. Keep `.github/workflows/deploy-pages.yml` and `.nojekyll`. Do not upload the ZIP itself as a substitute for its contents.
-2. In the new repository, open **Settings → Pages → Build and deployment → Source** and select **GitHub Actions**. The included workflow deploys the static app after each push to the default branch. See `DEPLOY-NEW-REPOSITORY.md`.
-3. Open the new repository’s deployment URL on HTTPS and run the launch checklist before relying on the app.
-
-## Data and account mode
-
-- Tracker records are stored locally under the S8.0-specific localStorage key. JSON export/restore continues to work, but existing legacy backups should be imported only when intentionally migrating data.
-- Personal Storage uses a separate S8.0 IndexedDB database for local notes/files. Those items are **not** included in tracker JSON backup; download important files separately.
-- The sign-in, sign-up, recovery, per-user cloud sync and private file upload code is included but inactive until a project owner creates/configures the private Supabase backend. GitHub Pages does not provide a database or user authentication by itself.
-- `studyorbit-config.js` accepts only a project URL, a frontend **Publishable** key and the exact redirect URL. Never place a Supabase `service_role` or secret key in frontend files. Run `supabase-schema.sql` in the owner’s Supabase project and follow `AUTH-CLOUD-SETUP-S8.0.md`.
-
-## Design principles
-
-- Dark navy/charcoal surfaces, restrained teal accent, consistent borders and compact typography.
-- Simple desktop sidebar and mobile bottom navigation with a More menu.
-- Insights use existing tracker values and explicitly show when data is missing; card rotation pauses for interaction, focus, page backgrounding and reduced-motion preference.
-- Existing calculations and tracker data structure are retained where possible; navigation hides inactive sections rather than deleting them.
-
-## Verification status
-
-Static syntax, internal asset references, manifest JSON, CSS parsing, SQL policy structure and ZIP integrity were checked for this release candidate. A full real-browser visual test, live GitHub Pages test, and Supabase signup/data-isolation end-to-end test have **not** been completed here. Do not claim cloud login/sync is live until the owner configuration and launch checklist pass.
+## Validation
+Run `python scripts/validate_release.py`. It checks HTML identifiers/assets, manifest, service-worker assets, JavaScript syntax, key preservation, navigation targets and presence of account safeguards. These are static checks, not a live backend security test.

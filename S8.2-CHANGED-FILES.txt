@@ -1,0 +1,33 @@
+StudyOrbital S8.2 — changed-files list
+Version rule: S8.2 (structure/navigation cleanup + account/profile improvements)
+
+REPLACE these 7 existing root files to apply the app update:
+1. index.html
+2. studyorbit-shell.js
+3. studyorbit-shell.css
+4. studyorbit-features.js
+5. studyorbit-auth.js
+6. studyorbit-auth.css
+7. sw.js
+
+RECOMMENDED support-file updates (not needed for the app to render):
+8. README.md
+9. DEPLOY-NEW-REPOSITORY.md
+10. scripts/validate_release.py
+
+NEW documentation to add at repository root (optional but recommended):
+11. AUTH-CLOUD-SETUP-S8.2.md
+12. DESIGN-SYSTEM-S8.2.md
+13. PRE-LAUNCH-CHECKLIST-S8.2.md
+14. S8.2-VALIDATION-RESULTS.txt
+15. S8.2-CHANGED-FILES.txt
+
+NOT modified: studyorbit-config.js (still contains empty owner-controlled Supabase settings),
+supabase-schema.sql, .github/workflows/static.yml, manifest.json, Personal Storage module,
+the main tracker data/calculation engine and To-do logic. They remain included in the complete ZIP.
+
+NO EXISTING FILES WERE DELETED from the project in this release. S8.1 documentation is retained as history.
+
+Important: account creation and per-profile cloud persistence require the owner to configure
+studyorbit-config.js using their own Supabase Project URL + public Publishable key and run
+supabase-schema.sql. Never use a service-role/secret key in frontend files.

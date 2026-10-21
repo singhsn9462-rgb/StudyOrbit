@@ -1,35 +1,20 @@
-# New repository launch — short steps
+# StudyOrbital S8.2 — deployment guide
 
-## 1. Create the repository
+## Replace files in the existing StudyOrbital repository
 
-- Create a **new** GitHub repository (suggested name: `StudyOrbital`).
-- For the simplest GitHub Free Pages setup, make it public.
-- Leave the old `Mission-IIT` repository untouched.
+Do not change the separate `Mission-IIT` repository. Extract the S8.2 ZIP to inspect it, but for a low-risk patch replace only the files listed in `S8.2-CHANGED-FILES.txt`. Keep all files at the repository root as shown in the ZIP. The nested `scripts/validate_release.py` remains under `scripts/`.
 
-## 2. Upload the app files
+The repository already uses `.github/workflows/static.yml`; do not create another Pages workflow. The provided ZIP retains that workflow file so a complete project archive remains coherent.
 
-- Extract `StudyOrbital-S8.0-New-Repository-Pack.zip` on your phone/computer.
-- Upload the **contents** of the extracted folder to the root of the new repository. The root should show `index.html`, `sw.js`, `manifest.json`, all `studyorbit-*.js/css`, image files, `.nojekyll`, and the `.github/workflows/deploy-pages.yml` workflow.
-- Do not create an extra folder layer around these files. Keep the filenames unchanged.
-- Commit the upload to `main` (or `master`).
+## Deploy
 
-## 3. Enable deployment
+1. Commit the replacements to the repository's `main` branch.
+2. Open **Actions** and wait for a green deployment check.
+3. Open **Settings → Pages** and use the live site link. Refresh online once so the S8.2 service-worker cache replaces the earlier shell.
+4. Test each navigation destination and the To-do control before using important study data.
 
-- Open the new repository → **Settings → Pages**.
-- Under **Build and deployment → Source**, choose **GitHub Actions**.
-- Open **Actions**. The `Deploy StudyOrbital` workflow should run on the first push. Wait until it shows success.
-- The live URL is shown by the workflow and under Settings → Pages; it normally looks like `https://USERNAME.github.io/REPOSITORY/`.
+## Login and cloud profiles
 
-## 4. Verify before everyday use
+The signup, login, password recovery, profile edit, per-user cloud sync and private storage integration are included in code. Actual accounts cannot run until a Supabase project is configured. Follow `AUTH-CLOUD-SETUP-S8.2.md`, run `supabase-schema.sql`, and set your own Project URL and public Publishable key in `studyorbit-config.js`. Never put a service-role/secret key in the repository.
 
-- Open the URL in Chrome and check navigation, Chapter Plan, question bank, Daily Log, tests, Analysis, To-do, backup/restore and Personal Storage.
-- Export an S8.0 JSON backup after entering test data. Verify restored data, then remove the test data.
-- Install/add to Home Screen only after the web version passes. Test an update and a fresh opening after deployment. Do **not** clear browser/site storage as a first troubleshooting step; it can erase local study records.
-
-## 5. Enable secure account login and cloud sync (one-time owner setup)
-
-This is the only part that cannot be finished from the ZIP alone because it needs a backend project owned by you. Follow `AUTH-CLOUD-SETUP-S8.0.md`: create a Supabase project, run `supabase-schema.sql`, set the exact new GitHub Pages URL as an auth redirect, then add the project URL, Publishable key and redirect URL to `studyorbit-config.js`. Use **only** the frontend Publishable key—never a `service_role` or secret key. Test sign-up, email confirmation, recovery, conflict handling, data isolation, sign-out and file privacy before allowing real records into the cloud.
-
-## Important privacy distinction
-
-Because GitHub Pages project sites under the same account share the same origin, this S8.0 package uses separate browser storage and cache namespaces. The existing Mission-IIT app is not part of this package and its files are not changed. Data migration only occurs if you deliberately export and restore it.
+Until the backend is configured and the live acceptance tests pass, account sync is not active and local tracker data remains in that browser. Keep regular JSON exports.

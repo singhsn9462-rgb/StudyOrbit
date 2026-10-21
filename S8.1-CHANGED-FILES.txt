@@ -1,0 +1,36 @@
+StudyOrbital S8.1 — exact change list
+
+REQUIRED ROOT APP FILES TO REPLACE IN THE EXISTING REPOSITORY
+1. index.html — updated model label/cache-busters; removed the old in-header creator-credit block.
+2. studyorbit-shell.js — grouped navigation, removes repeated home quick-link catalogue and duplicate rotating insight card, docks To-do beside the greeting on Overview and restores its floating position on other pages, adds a single bottom creator panel.
+3. studyorbit-shell.css — layout/grouping/footer rules; keeps the navy/teal visual theme and existing To-do icon dimensions.
+4. studyorbit-todo.js — prevents the To-do control from being dragged while it is docked; preserves existing task state/schema.
+5. studyorbit-auth.js — shows the active signed-in profile in the sidebar status; clarifies local-only mode when cloud login is not configured.
+6. sw.js — advances the app-shell cache name and cache-busting URLs so the new layout loads after deployment.
+
+ALREADY-CREATED DEPLOYMENT WORKFLOW
+- `.github/workflows/static.yml` is included in the ZIP with the same workflow filename and code as the workflow the user created from GitHub Pages setup. No extra workflow needs to be added. Leave the existing `static.yml` in place if it matches the current GitHub workflow.
+
+UPDATED DOCUMENTATION / RELEASE CHECK FILES IN THE ZIP
+- README.md
+- DEPLOY-NEW-REPOSITORY.md
+- CODEBASE-MAP.md
+- scripts/validate_release.py (static validation only; not required at runtime)
+- S8.1-VALIDATION-RESULTS.txt
+- S8.1-CHANGED-FILES.txt
+- AUTH-CLOUD-SETUP-S8.1.md
+- DESIGN-SYSTEM-S8.1.md
+- PRE-LAUNCH-CHECKLIST-S8.1.md
+
+RENAMED RELEASE REFERENCES INSIDE THE ZIP
+- AUTH-CLOUD-SETUP-S8.0.md -> AUTH-CLOUD-SETUP-S8.1.md
+- DESIGN-SYSTEM-S8.0.md -> DESIGN-SYSTEM-S8.1.md
+- PRE-LAUNCH-CHECKLIST-S8.0.md -> PRE-LAUNCH-CHECKLIST-S8.1.md
+- S8.0-VALIDATION-RESULTS.txt -> S8.1-VALIDATION-RESULTS.txt
+- `.github/workflows/deploy-pages.yml` -> `.github/workflows/static.yml` (same filename as the target repository's existing workflow, to prevent two Pages workflows).
+
+REMOVALS / DATA SAFETY
+- No tracker features, tracker calculation formulas, tracker data IDs, localStorage key, or Personal Storage IndexedDB key were deleted or changed.
+- The four S8.0-named documentation files above are replaced by their S8.1-named equivalents in the new ZIP.
+- The old ZIP's `deploy-pages.yml` workflow path is replaced by `static.yml`. The target repository currently has `static.yml`, so do not add a second workflow.
+- Cloud profile/login UI and per-user sync code are present but remain inactive until the owner fills `studyorbit-config.js` with Supabase URL, Publishable key and exact GitHub Pages redirect URL, runs `supabase-schema.sql`, and completes end-to-end security tests. The ZIP cannot activate a private backend without those owner-owned values.
