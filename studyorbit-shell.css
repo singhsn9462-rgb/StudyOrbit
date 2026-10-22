@@ -253,3 +253,62 @@ main.wrap.so-app{min-height:100vh;min-height:100dvh;grid-template-rows:auto minm
 @media(max-height:720px) and (max-width:680px){.so-insights-panel{height:52svh;min-height:300px}.so-app .so-home-intro{padding-top:clamp(8px,calc(14svh - 55px),70px)}}
 @media(max-width:360px){.so-insights-panel{padding:8px;gap:7px;min-height:310px}.so-insight-grid{gap:5px}.so-insight-card{padding:7px 6px}.so-insight-card h3{font-size:10px}.so-insight-card p{font-size:8.5px}.so-insight-link{font-size:8px!important}.so-app .so-welcome-copy h2{font-size:22px}.so-more-item>.so-nav-button{gap:6px}}
 @media(prefers-reduced-motion:reduce){.so-mobile-nav.so-nav-refresh .so-nav-button{animation:none}.so-insight-progress i{transition:none}}
+
+
+/* S8.3 Home dashboard refinement — airy smart-home reference, restrained teal/navy, tracker sections unchanged. */
+.so-app .so-home-intro{padding-top:clamp(34px,calc(16svh - 52px),112px);margin-bottom:22px}
+.so-app .so-kicker{color:#5aaeb8;letter-spacing:1.65px;font-size:10px;margin-bottom:10px}
+.so-app .so-welcome-row{min-height:76px;gap:14px;margin-bottom:16px}
+.so-app .so-welcome-copy h2{font-size:clamp(25px,4vw,36px);font-weight:760;letter-spacing:-1px;color:#f7fbff}
+.so-app #soGreetingWish{color:#8bd8df;font-size:clamp(12px,1.6vw,14px);font-weight:650;margin-top:8px}
+.so-home-tools{flex:0 0 76px;width:76px;min-width:76px;min-height:76px}
+.so-home-tools #todoFab.todo-docked{flex:0 0 70px;width:70px;min-width:70px;height:70px;min-height:70px;border-radius:20px!important;border:1px solid #4e8995!important;background:linear-gradient(145deg,#f7fcff 0%,#dceff4 100%)!important;box-shadow:0 8px 22px #061d2b38,inset 0 1px #fff!important}
+#todoFab.todo-docked .todo-fab-symbol{width:35px;height:35px;color:#176176!important}
+#todoFab.todo-docked .todo-fab-symbol svg{width:32px;height:32px;stroke:currentColor;stroke-width:1.7}
+#todoFab.todo-docked .todo-fab-label{font-size:9px!important;color:#17495a!important;font-weight:800!important;letter-spacing:.1px}
+.so-app .so-insights-panel{width:94%;height:55svh;min-height:330px;max-height:560px;box-sizing:border-box;margin-inline:auto;padding:15px;border:1px solid #c9e4eb;border-radius:23px;background:linear-gradient(145deg,#f9fdff 0%,#edf7fb 60%,#e3f2f7 100%);box-shadow:0 15px 36px #071b2a22,inset 0 1px #fff;color:#142b3a;gap:12px}
+.so-app .so-insights-heading>div>span{font-size:11px;letter-spacing:1.35px;color:#15566a}
+.so-app .so-insights-heading small{font-size:10px;color:#668796}
+.so-app .so-insights-badge{border:1px solid #c3e1e9;background:#dff2f7;color:#176579;border-radius:11px}
+.so-app .so-insight-grid{gap:10px}
+.so-app .so-insight-card{padding:11px;border:1px solid #d2e5eb;border-radius:15px;background:linear-gradient(145deg,#fff 0%,#f4fafc 100%);box-shadow:0 5px 13px #0c33410c}
+.so-app .so-insight-card.is-priority{border-color:#9bd2d8;background:linear-gradient(145deg,#f5ffff,#e6f6f8)}
+.so-app .so-insight-icon{background:#e1f3f7;color:#1b7182;border:1px solid #cde8ee;border-radius:9px}
+.so-app .so-insight-category{color:#317a88}
+.so-app .so-insight-value{color:#166779;font-size:11px}
+.so-app .so-insight-card h3{color:#1b3443;font-size:clamp(11px,1.15vw,14px);line-height:1.3}
+.so-app .so-insight-card p{color:#607a89;font-size:10px;line-height:1.4}
+.so-app .so-insight-link{color:#167183!important}
+.so-app .so-insight-link:hover{color:#0b4a5c!important}
+.so-app .so-insight-progress{background:#d6e8ed}
+.so-app .so-insight-progress i{background:#2498a6}
+.so-app .so-insight-footer>span:nth-child(2){color:#6b8795}
+.so-app .so-insight-footer #soInsightNext{border:1px solid #c7e1e8!important;background:#e5f4f8!important;color:#185b6c!important;border-radius:9px!important}
+.so-app .so-search-wrap{width:94%;max-width:none;margin:15px auto 0}
+.so-app .so-search-box{min-height:47px;padding:0 14px;border:1px solid #d0e4ea;border-radius:16px;background:linear-gradient(180deg,#fff,#f2f9fb);box-shadow:0 6px 20px #071b2a16}
+.so-app .so-search-symbol{color:#3c8797}
+.so-app .so-search-box input{background:transparent!important;border:0!important;color:#173444!important;min-height:45px!important;font-size:13px!important;box-shadow:none!important}
+.so-app .so-search-box input::placeholder{color:#7893a0!important}
+.so-app .so-search-box button{color:#285e6c!important}
+.so-app .so-search-results{border:1px solid #c9e2e9;background:rgba(244,251,253,.80);backdrop-filter:blur(18px);box-shadow:0 18px 45px #061a2a45}
+@media(max-width:680px){
+ .so-app .so-home-intro{padding-top:clamp(34px,calc(16svh - 55px),104px);margin-bottom:18px}
+ .so-app .so-welcome-row{align-items:center;min-height:68px;gap:8px;margin-bottom:13px}
+ .so-app .so-welcome-copy h2{font-size:clamp(23px,6.3vw,29px);line-height:1.12;letter-spacing:-.65px}
+ .so-app #soGreetingWish{font-size:12px;line-height:1.35;margin-top:6px}
+ .so-home-tools{flex-basis:68px;width:68px;min-width:68px;min-height:68px}
+ .so-home-tools #todoFab.todo-docked{flex-basis:64px;width:64px;min-width:64px;height:64px;min-height:64px;border-radius:17px!important}
+ #todoFab.todo-docked .todo-fab-symbol{width:31px;height:31px}
+ #todoFab.todo-docked .todo-fab-symbol svg{width:29px;height:29px}
+ .so-app .so-insights-panel{width:94%;height:55svh;min-height:320px;max-height:520px;padding:12px;border-radius:20px;gap:9px}
+ .so-app .so-insight-grid{gap:8px}
+ .so-app .so-insight-card{padding:9px;border-radius:13px}
+ .so-app .so-insight-icon{width:23px;height:23px;flex-basis:23px;font-size:13px}
+ .so-app .so-insight-card h3{font-size:11px}
+ .so-app .so-insight-card p{font-size:9px;line-height:1.32;-webkit-line-clamp:3}
+ .so-app .so-insight-category{font-size:8px}
+ .so-app .so-insight-value{font-size:10px}
+ .so-app .so-insight-footer>span:nth-child(2){font-size:8px}
+ .so-app .so-search-wrap{width:94%;margin-top:13px}
+}
+@media(max-height:650px) and (max-width:680px){.so-app .so-home-intro{padding-top:24px}.so-app .so-insights-panel{height:55svh;min-height:280px}}
