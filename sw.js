@@ -1,5 +1,5 @@
-/* StudyOrbital S8.2 — update-aware shell and profile setup cache. */
-const CACHE_NAME = 'studyorbit-s82-shell-structure-profile1';
+/* StudyOrbital S8.2.1 — home dashboard, insights, search and nav preferences. */
+const CACHE_NAME = 'studyorbit-s821-home-dashboard1';
 // CacheStorage is origin-wide on GitHub Pages. Use an S8-only prefix so this
 // repository never removes the existing Mission-IIT app's S7.x caches.
 const CACHE_PREFIX = 'studyorbit-s8';
@@ -7,15 +7,15 @@ const CORE = [
   './',
   './index.html',
   './manifest.json',
-  './studyorbit-features.js?v=8200',
-  './studyorbit-shell.js?v=8200',
-  './studyorbit-auth.js?v=8200',
+  './studyorbit-features.js?v=8210',
+  './studyorbit-shell.js?v=8210',
+  './studyorbit-auth.js?v=8210',
   './studyorbit-library.js?v=8001',
-  './studyorbit-auth.css?v=8200',
+  './studyorbit-auth.css?v=8210',
   './studyorbit-library.css?v=8001',
-  './studyorbit-config.js?v=8200',
+  './studyorbit-config.js?v=8210',
   './studyorbit-features.css?v=7902',
-  './studyorbit-shell.css?v=8200',
+  './studyorbit-shell.css?v=8210',
   './studyorbit-todo.js?v=8100',
   './studyorbit-todo.css?v=7802'
 ];
